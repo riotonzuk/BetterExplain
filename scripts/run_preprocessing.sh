@@ -4,14 +4,14 @@ export MAX_LENGTH=5
 
 # Creates jsonl files for train and dev
 
-#python3 preprocessing/store_parse_trees.py \
-#      --data_dir $DATA_FOLDER  \
-#      --tokenizer_name $TOKENIZER_NAME
+python3 preprocessing/store_parse_trees.py \
+      --data_dir $DATA_FOLDER  \
+      --tokenizer_name $TOKENIZER_NAME
 
-#python3 preprocessing/make_list.py \
-#     --filename $DATA_FOLDER/train_with_parse.json
-#python3 preprocessing/make_list.py \
-#     --filename $DATA_FOLDER/dev_with_parse.json
+python3 preprocessing/make_list.py \
+     --filename $DATA_FOLDER/train_with_parse.json
+python3 preprocessing/make_list.py \
+     --filename $DATA_FOLDER/dev_with_parse.json
 
 # Create concept store for SST-2 dataset
 # Since SST-2 already provides parsed output, easier to do it this way, for other datasets, need to adapt
