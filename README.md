@@ -1,10 +1,25 @@
-# SelfExplain Framework
+# BetterExplain
+CSE 517 (NLP) project 
 
-The code for the SelfExplain framework (https://arxiv.org/abs/2103.12279) 
+## Package Requirements
+We took the setup script from the original
+implementation(https://github.com/dheerajrajagopal/SelfExplain).  To setup the
+packages we recommend using a conda envrionment. E.g. after conda is installed
+and setup(https://www.anaconda.com/),
+```
+conda create -n selfexplain python=3.8 -y
+conda activate selfexplain
+```
+Above will activate the envionment.
 
-Currently, this repo supports SelfExplain-XLNet version for SST-2 dataset. The other datasets and models shown in the paper will be updated soon.
+Packages can be installed via
+```
+pip install -r requirements.txt
+```
 
-## Preprocessing
+For pytorch please refer to https://pytorch.org/get-started/locally/
+
+## Preprocessing (Currently Only for SST-2)
 
 Data for preprocessing available in `data/` folder
 
@@ -20,37 +35,8 @@ sh scripts/run_preprocessing.sh
 ```
 
 
-## Training
+## Training (Currently Only for SST-2)
 
 ```shell
 sh scripts/run_self_explain.sh
-```
-## Generation (Inference)
-
-(In Progress)
-
-```sh
- python model/infer_model.py
-        --ckpt $PATH_TO_BEST_DEV_CHECKPOINT \
-        --concept_map $DATA_FOLDER/concept_idx.json \ 
-        --batch_size $BS \
-        --paths_output_loc $PATH_TO_OUTPUT_PREDS \
-        --dev_file $PATH_TO_DEV_FILE
- ```
-
-## Demo 
-
-Coming Soon ... 
-
-## Citation 
-
-```
-@misc{rajagopal2021selfexplain,
-      title={SelfExplain: A Self-Explaining Architecture for Neural Text Classifiers}, 
-      author={Dheeraj Rajagopal and Vidhisha Balachandran and Eduard Hovy and Yulia Tsvetkov},
-      year={2021},
-      eprint={2103.12279},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL}
-}
 ```
