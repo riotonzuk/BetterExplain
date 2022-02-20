@@ -30,8 +30,9 @@ class ParseTree():
                            parse_tree_stored: List[Dict]):
 
         label = tree.label()
+        
         words = [x.split('_')[0] for x in tree.leaves()]
-        indices = [int(x.split('_')[-1]) for x in tree.leaves()]
+        indices = [int(x.split('_')[1]) for x in tree.leaves()]
         ngram_info = len(words)
         words = " ".join(words)
 
@@ -80,15 +81,15 @@ class ParseTree():
         parsed_tree_as_list = self.traverse_and_store(parsed_tree, parse_tree_stored=[])
 
         num_tokens = len(combined_text)
-        parsed_tree_as_list = self.get_one_hot_encoded_vector(parse_tree_list=parsed_tree_as_list,
-                                                              num_tokens=num_tokens)
+        parsed_tree_as_list = self.get_multi_hot_encoded_vector(parse_tree_list=parsed_tree_as_list,
+                                                                num_tokens=num_tokens)
 
-        nt_idx_matrix = [x['onehot'] for x in parsed_tree_as_list]
+        nt_idx_matrix = [x['multihot'] for x in parsed_tree_as_list]
         return parsed_tree_as_list, nt_idx_matrix
 
-    def get_one_hot_encoded_vector(self, parse_tree_list, num_tokens):
+    def get_multi_hot_encoded_vector(self, parse_tree_list, num_tokens):
         for item in parse_tree_list:
-            onehot_array = np.zeros((num_tokens,1))
-            onehot_array[item['indices']] = 1.0
-            item['onehot'] = np.squeeze(onehot_array, axis=1).tolist()
+            multihot_array = np.zeros((num_tokens,1))
+            multihot_array[item['indices']] = 1.0
+            item['multihot'] = np.squeeze(multihot_array, axis=1).tolist()
         return parse_tree_list

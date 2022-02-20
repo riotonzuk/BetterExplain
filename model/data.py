@@ -3,6 +3,7 @@ source[TAB]target
 """
 import logging
 import pytorch_lightning as pl
+import json
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
@@ -54,11 +55,12 @@ class ClassificationDataset(Dataset):
 
     def read_dataset(self):
         logging.info("Reading data from {}".format(self.data_path))
-        data = pd.read_json(self.data_path, orient="records", lines=True)
+        #data = pd.read_json(self.data_path, orient="records", lines=True)
+        data = json.load(open(self.data_path))
         self.sentences, self.answer_labels, self.nt_idx_matrix = [], [], []
         logging.info(f"Reading dataset file from {self.data_path}")
         # print(data, len(data))
-        for i, row in tqdm(data.iterrows(), total=len(data), desc="Reading dataset samples"):
+        for i, row in tqdm(enumerate(data), total=len(data), desc="Reading dataset samples"):
             self.answer_labels.append(int(row["label"]))
             self.sentences.append(row["sentence"])
             self.nt_idx_matrix.append(torch.tensor(row["nt_idx_matrix"]).long())

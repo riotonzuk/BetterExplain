@@ -12,7 +12,7 @@ from SE_XLNet import SEXLNet
 def get_train_steps(dm):
   total_devices = args.num_gpus * args.num_nodes
   train_batches = len(dm.train_dataloader()) // total_devices
-  return (args.max_epochs * train_batches) // args.accumulate_grad_batches
+  return (args.max_epochs * train_batches) // 1#args.accumulate_grad_batches
 
 
 
@@ -52,10 +52,11 @@ logging.basicConfig(level=logging.INFO)
 logging.info("Loading the data module")
 dm = ClassificationData(basedir=args.dataset_basedir, tokenizer_name=args.model_name, batch_size=args.batch_size)
 
+
 # Step 2: Init Model
 logging.info("Initializing the model")
 model = SEXLNet(hparams=args)
-model.hparams.warmup_steps = int(get_train_steps(dm) * model.hparams.warmup_prop)
+model.hparams.warmup_steps = 0#int(get_train_steps(dm) * model.hparams.warmup_prop)
 lr_monitor = LearningRateMonitor(logging_interval='step')
 
 # Step 3: Start

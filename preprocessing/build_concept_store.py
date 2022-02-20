@@ -21,10 +21,9 @@ def concept_store(model_name, input_file_name, output_folder, max_concept_length
     concept_idx = OrderedDict()
 
     idx = 0
-    with open(input_file_name, 'r') as input_file:
-        for i, line in enumerate(input_file):
-            json_line = json.loads(line)
-            sentence = json_line["sentence"].strip().strip(' .')
+    with open(input_file_name, 'r') as input_file: 
+       for i, curr_dict in enumerate(json.load(input_file)):
+            sentence = curr_dict["sentence"].strip().strip(' .')
             if len(sentence.split()) <= max_concept_length:
                 concept_idx[idx] = sentence
                 idx += 1

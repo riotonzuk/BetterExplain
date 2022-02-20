@@ -1,9 +1,10 @@
 import argparse
 import csv
 import json
+from tqdm import tqdm
 from typing import Dict
 
-from preprocessing.constituency_parse import ParseTree
+from constituency_parse import ParseTree
 
 
 class ParsedDataset(object):
@@ -16,7 +17,10 @@ class ParsedDataset(object):
             with open(input_file_name, 'r') as open_file:
                 reader = csv.reader(open_file, delimiter='\t')
                 next(reader, None)  # skip header
-                for row in reader:
+                
+                reader = list(reader)
+                
+                for row in tqdm(reader, total=len(reader)):
                     text = row[0]
                     parse_tree, nt_idx_matrix = self.parser.get_parse_tree_for_raw_sent(raw_sent=text)
                     datapoint_dict = {'sentence': row[0],
@@ -52,7 +56,7 @@ def main():
         output_file_name = args.data_dir + file_split + '_with_parse.json'
         parsed_data.read_and_store_from_tsv(input_file_name=input_file_name,
                                             output_file_name=output_file_name)
-
+        print(f"done with {file_split}")
 
 if __name__ == "__main__":
     main()

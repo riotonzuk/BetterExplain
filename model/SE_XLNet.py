@@ -13,25 +13,26 @@ from model_utils import TimeDistributed
 class SEXLNet(LightningModule):
     def __init__(self, hparams):
         super().__init__()
-        self.hparams = hparams
+        self.hparam = hparams
         self.save_hyperparameters()
-        config = AutoConfig.from_pretrained(self.hparams.model_name)
-        self.model = AutoModel.from_pretrained(self.hparams.model_name)
+        config = AutoConfig.from_pretrained(self.hparam.model_name)
+        self.model = AutoModel.from_pretrained(self.hparam.model_name)
         self.pooler = SequenceSummary(config)
 
-        self.classifier = nn.Linear(config.d_model, self.hparams.num_classes)
+        self.classifier = nn.Linear(config.d_model, self.hparam.num_classes)
 
-        self.concept_store = torch.load(self.hparams.concept_store)
+        self.concept_store = torch.load(self.hparam.concept_store)
+        print("hello")
 
         self.phrase_logits = TimeDistributed(nn.Linear(config.d_model,
-                                                        self.hparams.num_classes))
+                                                        self.hparam.num_classes))
         self.sequence_summary = SequenceSummary(config)
 
-        self.topk =  self.hparams.topk
+        self.topk =  self.hparam.topk
         # self.topk_gil_mlp = TimeDistributed(nn.Linear(config.d_model,
-        #                                               self.hparams.num_classes))
+        #                                               self.hparam.num_classes))
 
-        self.topk_gil_mlp = nn.Linear(config.d_model,self.hparams.num_classes)
+        self.topk_gil_mlp = nn.Linear(config.d_model,self.hparam.num_classes)
 
         self.multihead_attention = torch.nn.MultiheadAttention(config.d_model,
                                                                dropout=0.2,
@@ -39,8 +40,8 @@ class SEXLNet(LightningModule):
 
         self.activation = nn.ReLU()
 
-        self.lamda = self.hparams.lamda
-        self.gamma = self.hparams.gamma
+        self.lamda = self.hparam.lamda
+        self.gamma = self.hparam.gamma
 
         self.dropout = nn.Dropout(config.dropout)
         self.loss = nn.CrossEntropyLoss()
@@ -67,12 +68,12 @@ class SEXLNet(LightningModule):
         return parser
 
     def configure_optimizers(self):
-        return AdamW(self.parameters(), lr=self.hparams.lr, betas=(0.9, 0.99),
+        return AdamW(self.parameters(), lr=self.hparam.lr, betas=(0.9, 0.99),
                      eps=1e-8)
     
     def forward(self, batch):
         self.concept_store = self.concept_store.to(self.model.device)
-        # print(self.concept_store.size(), self.hparams.concept_store)
+        # print(self.concept_store.size(), self.hparam.concept_store)
         tokens, tokens_mask, padded_ndx_tensor, labels = batch
 
         # step 1: encode the sentence
