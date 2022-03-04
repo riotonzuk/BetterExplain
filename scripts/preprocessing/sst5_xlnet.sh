@@ -1,4 +1,4 @@
-export DATA_FOLDER='data/'
+export DATA_FOLDER='data/stanfordSentimentTreebank/'
 export TOKENIZER_NAME='xlnet-base-cased'
 export MAX_LENGTH=5
 
@@ -12,6 +12,8 @@ python3 preprocessing/make_list.py \
      --filename $DATA_FOLDER/train_with_parse.json
 python3 preprocessing/make_list.py \
      --filename $DATA_FOLDER/dev_with_parse.json
+python3 preprocessing/make_list.py \
+     --filename $DATA_FOLDER/test_with_parse.json
 
 # Create concept store for SST-2 dataset
 # Since SST-2 already provides parsed output, easier to do it this way, for other datasets, need to adapt

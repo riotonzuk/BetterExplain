@@ -18,7 +18,6 @@ class SEXLNet(LightningModule):
         config = AutoConfig.from_pretrained(self.hparam.model_name)
         self.model = AutoModel.from_pretrained(self.hparam.model_name)
         self.pooler = SequenceSummary(config)
-
         self.classifier = nn.Linear(config.d_model, self.hparam.num_classes)
 
         self.concept_store = torch.load(self.hparam.concept_store)
@@ -57,7 +56,7 @@ class SEXLNet(LightningModule):
                             help="Number of attention heads.", default=1)
         parser.add_argument("--kqv_dim", type=int,
                             help="Dimensionality of the each attention head.", default=256)
-        parser.add_argument("--num_classes", type=float,
+        parser.add_argument("--num_classes", type=int,
                             help="Number of classes.", default=2)
         parser.add_argument("--lr", default=2e-5, type=float,
                             help="Initial learning rate.")

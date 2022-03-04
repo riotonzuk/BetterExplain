@@ -31,7 +31,11 @@ On a python shell, do the following for installing the parser
 ```
 
 ```shell
-sh scripts/run_preprocessing.sh
+# sh scripts/run_preprocessing.sh
+# SST2 XLNET
+sh scripts/preprocessing/sst2_xlnet.sh
+# SST5 XLNET
+sh scripts/preprocessing/sst5_xlnet.sh
 ```
 
 

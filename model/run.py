@@ -69,6 +69,10 @@ checkpoint_callback = ModelCheckpoint(
     mode='max'
 )
 
-trainer = pl.Trainer.from_argparse_args(args, callbacks=[checkpoint_callback], val_check_interval=0.5, gradient_clip_val=args.clip_grad, track_grad_norm=2)
-trainer.fit(model, dm)
-# trainer.test()
+try:
+  trainer = pl.Trainer.from_argparse_args(args, callbacks=[checkpoint_callback], val_check_interval=0.5, gradient_clip_val=args.clip_grad, track_grad_norm=2)
+  trainer.fit(model, dm)
+except Exception as e:
+  print('training failed!', e)
+finally:
+  trainer.test(ckpt_path="best")

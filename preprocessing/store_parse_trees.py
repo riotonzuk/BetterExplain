@@ -3,6 +3,7 @@ import csv
 import json
 from tqdm import tqdm
 from typing import Dict
+import os
 
 from constituency_parse import ParseTree
 
@@ -51,8 +52,10 @@ def main():
     parsed_data = ParsedDataset(tokenizer_name=args.tokenizer_name)
 
     # Read input files from folder
-    for file_split in ['train','dev']:
+    for file_split in ['train','dev','test']:
         input_file_name = args.data_dir + file_split + '.tsv'
+        if not os.path.isfile(input_file_name):
+            print("%s does not exist, skipping..." % input_file_name)
         output_file_name = args.data_dir + file_split + '_with_parse.json'
         parsed_data.read_and_store_from_tsv(input_file_name=input_file_name,
                                             output_file_name=output_file_name)
