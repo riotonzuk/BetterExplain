@@ -75,4 +75,5 @@ try:
 except Exception as e:
   print('training failed!', e)
 finally:
+  # trainer.test(model, dm)
   trainer.test(ckpt_path="best")
