@@ -19,7 +19,7 @@ pip install -r requirements.txt
 
 For pytorch please refer to https://pytorch.org/get-started/locally/
 
-## Preprocessing (Currently Only for SST-2)
+## Preprocessing
 
 Data for preprocessing available in `data/` folder
 
@@ -28,6 +28,11 @@ On a python shell, do the following for installing the parser
 ```python
 >>> import benepar
 >>> benepar.download('benepar_en3')
+```
+
+To get all datasets in the same `train/dev/test.tsv` format, run
+```shell
+python preprocessing/get_tsv.py <SST5/...>
 ```
 
 ```shell
@@ -39,8 +44,10 @@ sh scripts/preprocessing/sst5_xlnet.sh
 ```
 
 
-## Training (Currently Only for SST-2)
+## Training
 
 ```shell
-sh scripts/run_self_explain.sh
+# SE_XLNet
+sh scripts/experiments/sst2_xlnet.sh
+sh scripts/experiments/sst5_xlnet.sh
 ```
