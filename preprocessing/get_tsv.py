@@ -6,7 +6,7 @@ import numpy as np
 
 def convert(args):
     dataset = args.dataset
-    assert dataset in ["SST5"], "Invalid dataset type: %s!" % dataset
+    assert dataset in ["SST5", "TREC6", "TREC50"], "Invalid dataset type: %s!" % dataset
 
     if dataset == "SST5":
         def get_label(lbl):
@@ -72,7 +72,36 @@ def convert(args):
         train_df.to_csv(os.path.join(path, "train.tsv"), sep="\t", index=False)
         dev_df.to_csv(os.path.join(path,"dev.tsv"), sep="\t", index=False)
         test_df.to_csv(os.path.join(path,"test.tsv"), sep="\t", index=False)
+    elif dataset in ("TREC6", "TREC50"):
+        classes = int(dataset[4:])
+        path = os.path.join("data", dataset)
+        is_TREC50 = classes == 50
+        train_data = trec_dataset(path, train=True, fine_grained=is_TREC50)
+        counter = 0
+        label_map = {}
 
+        for sample in train_data:
+            label = sample["label"]
+            if label not in label_map:
+                label_map[label] = counter
+                counter += 1
+
+        test_data = trec_dataset(".", test=True, fine_grained=is_TREC50)
+        train_split = 9 * len(train_data) // 10
+        train_data, dev_data = train_data[:train_split], train_data[train_split:]
+
+        sets = [(f"train", train_data), \
+                (f"dev", dev_data), \
+                (f"test", test_data)]
+
+        for save_filename, data in sets:
+            save_path = os.path.join(f"{path}", f"{save_filename}.tsv")
+            with open(save_path, "w") as output_file:
+                output_file.write(f"sentence\tlabel\n")
+                for sample in data:
+                    data = sample["text"]
+                    label = label_map[sample["label"]]
+                    output_file.write(f"{data}\t{label}\n")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
