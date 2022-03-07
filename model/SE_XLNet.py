@@ -162,6 +162,12 @@ class SEXLNet(LightningModule):
 
         loss_f = nn.CrossEntropyLoss()
         loss = loss_f(logits, batch[-1])
+        
+        self.log('test_loss', loss, on_step=True,
+                 on_epoch=True, prog_bar=True, sync_dist=True)
+        self.log('test_acc', acc, on_step=True, on_epoch=True,
+                 prog_bar=True, sync_dist=True)
+        
         return {"loss": loss}
 
     def get_progress_bar_dict(self):
