@@ -28,8 +28,8 @@ class SEXLNet(LightningModule):
                                                             self.hparam.num_classes))
 
             self.topk =  self.hparam.topk
-            self.topk_gil_mlp = TimeDistributed(nn.Linear(config.d_model,
-                                                          self.hparam.num_classes))
+            # self.topk_gil_mlp = TimeDistributed(nn.Linear(config.d_model,
+            #                                               self.hparam.num_classes))
 
             self.topk_gil_mlp = nn.Linear(config.d_model,self.hparam.num_classes)
 
