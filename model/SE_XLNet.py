@@ -19,24 +19,23 @@ class SEXLNet(LightningModule):
         self.model = AutoModel.from_pretrained(self.hparam.model_name)
         self.pooler = SequenceSummary(config)
         self.classifier = nn.Linear(config.d_model, self.hparam.num_classes)
-
-        self.concept_store = torch.load(self.hparam.concept_store)
-        print("hello")
-
-        self.phrase_logits = TimeDistributed(nn.Linear(config.d_model,
-                                                        self.hparam.num_classes))
         self.sequence_summary = SequenceSummary(config)
 
-        self.topk =  self.hparam.topk
-        # self.topk_gil_mlp = TimeDistributed(nn.Linear(config.d_model,
-        #                                               self.hparam.num_classes))
+        if not self.hparam.baseline:
+            self.concept_store = torch.load(self.hparam.concept_store)
 
-        self.topk_gil_mlp = nn.Linear(config.d_model,self.hparam.num_classes)
+            self.phrase_logits = TimeDistributed(nn.Linear(config.d_model,
+                                                            self.hparam.num_classes))
 
-        self.multihead_attention = torch.nn.MultiheadAttention(config.d_model,
-                                                               dropout=0.2,
-                                                               num_heads=8)
+            self.topk =  self.hparam.topk
+            self.topk_gil_mlp = TimeDistributed(nn.Linear(config.d_model,
+                                                          self.hparam.num_classes))
 
+            self.topk_gil_mlp = nn.Linear(config.d_model,self.hparam.num_classes)
+
+            self.multihead_attention = torch.nn.MultiheadAttention(config.d_model,
+                                                                   dropout=0.2,
+                                                                   num_heads=8)
         self.activation = nn.ReLU()
 
         self.lamda = self.hparam.lamda
@@ -64,6 +63,8 @@ class SEXLNet(LightningModule):
                             help="Weight decay rate.")
         parser.add_argument("--warmup_prop", default=0.01, type=float,
                             help="Warmup proportion.")
+        parser.add_argument("--baseline", action="store_true",
+                            help="Run baseline XLNet.")
         return parser
 
     def configure_optimizers(self):
@@ -71,8 +72,8 @@ class SEXLNet(LightningModule):
                      eps=1e-8)
     
     def forward(self, batch):
-        self.concept_store = self.concept_store.to(self.model.device)
-        # print(self.concept_store.size(), self.hparam.concept_store)
+        if not self.hparam.baseline:
+            self.concept_store = self.concept_store.to(self.model.device)
         tokens, tokens_mask, padded_ndx_tensor, labels = batch
 
         # step 1: encode the sentence
@@ -81,12 +82,13 @@ class SEXLNet(LightningModule):
                                                              attention_mask=tokens_mask)
         logits = self.classifier(sentence_cls)
 
-        lil_logits = self.lil(hidden_state=hidden_state,
-                              nt_idx_matrix=padded_ndx_tensor)
-        lil_logits_mean = torch.mean(lil_logits, dim=1)
-        gil_logits, topk_indices = self.gil(pooled_input=sentence_cls)
+        if not self.hparam.baseline:
+            lil_logits = self.lil(hidden_state=hidden_state,
+                                  nt_idx_matrix=padded_ndx_tensor)
+            lil_logits_mean = torch.mean(lil_logits, dim=1)
+            gil_logits, topk_indices = self.gil(pooled_input=sentence_cls)
 
-        logits = logits + self.lamda * lil_logits_mean + self.gamma * gil_logits
+            logits = logits + self.lamda * lil_logits_mean + self.gamma * gil_logits
         predicted_labels = torch.argmax(logits, -1)
         if labels is not None:
             acc = torch.true_divide(
@@ -94,8 +96,13 @@ class SEXLNet(LightningModule):
         else:
             acc = None
 
-        return logits, acc, {"topk_indices": topk_indices,
+        if not self.hparam.baseline:
+            output_dict = {"topk_indices": topk_indices,
                              "lil_logits": lil_logits}
+        else:
+            output_dict = {}
+
+        return logits, acc, output_dict
 
     def gil(self, pooled_input):
         batch_size = pooled_input.size(0)
@@ -110,7 +117,6 @@ class SEXLNet(LightningModule):
                                                      value=concat_pooled_concepts)
 
         gil_topk_logits = self.topk_gil_mlp(attended_concepts[:,0,:])
-        # print(gil_topk_logits.size())
         # gil_logits = torch.mean(gil_topk_logits, dim=1)
         return gil_topk_logits, topk_indices
 
@@ -157,12 +163,7 @@ class SEXLNet(LightningModule):
         return {"loss": loss}
 
     def test_step(self, batch, batch_idx):
-        # Load the data into variables
-        logits, acc, _ = self(batch)
-
-        loss_f = nn.CrossEntropyLoss()
-        loss = loss_f(logits, batch[-1])
-        return {"loss": loss}
+        return self.validation_step(batch, batch_idx)
 
     def get_progress_bar_dict(self):
         tqdm_dict = super().get_progress_bar_dict()
