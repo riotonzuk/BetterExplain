@@ -163,7 +163,18 @@ class SEXLNet(LightningModule):
         return {"loss": loss}
 
     def test_step(self, batch, batch_idx):
-        return self.validation_step(batch, batch_idx)
+        # Load the data into variables
+        logits, acc, _ = self(batch)
+
+        loss_f = nn.CrossEntropyLoss()
+        loss = loss_f(logits, batch[-1])
+        
+        self.log('test_loss', loss, on_step=True,
+                 on_epoch=True, prog_bar=True, sync_dist=True)
+        self.log('test_acc', acc, on_step=True, on_epoch=True,
+                 prog_bar=True, sync_dist=True)
+        
+        return {"loss": loss}
 
     def get_progress_bar_dict(self):
         tqdm_dict = super().get_progress_bar_dict()
