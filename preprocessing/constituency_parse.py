@@ -32,7 +32,12 @@ class ParseTree():
         label = tree.label()
         
         words = [x.split('_')[0] for x in tree.leaves()]
-        indices = [int(x.split('_')[1]) for x in tree.leaves()]
+        indices = []
+        for x in tree.leaves():
+            try:
+                indices.append(int(x.split('_')[1]))
+            except:
+                print(f"bad leaf: {x}")
         ngram_info = len(words)
         words = " ".join(words)
 
