@@ -32,7 +32,8 @@ On a python shell, do the following for installing the parser
 
 To get all datasets in the same `train/dev/test.tsv` format, run
 ```shell
-python preprocessing/get_tsv.py <SST5/...>
+# processed tsv files are generated in data/dataset_name
+python preprocessing/get_tsv.py <SST5/TREC6/TREC50>
 ```
 
 ```shell
@@ -41,6 +42,7 @@ python preprocessing/get_tsv.py <SST5/...>
 sh scripts/preprocessing/sst2_xlnet.sh
 # SST5 XLNET
 sh scripts/preprocessing/sst5_xlnet.sh
+# TREC6 XLNET
 ```
 
 

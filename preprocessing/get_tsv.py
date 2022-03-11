@@ -3,10 +3,11 @@ from ast import arg
 import os
 import pandas as pd
 import numpy as np
+from torchnlp.datasets import trec_dataset
 
 def convert(args):
     dataset = args.dataset
-    assert dataset in ["SST5", "TREC6", "TREC50"], "Invalid dataset type: %s!" % dataset
+    assert dataset in ["SST5", "TREC6", "TREC50", "SUBJ"], "Invalid dataset type: %s!" % dataset
 
     if dataset == "SST5":
         def get_label(lbl):
@@ -102,6 +103,36 @@ def convert(args):
                     data = sample["text"]
                     label = label_map[sample["label"]]
                     output_file.write(f"{data}\t{label}\n")
+    elif dataset == "SUBJ":
+        path = "data/SUBJ"
+        os.makedirs(path, exist_ok=True)
+        data_dir = "data/movie-review"
+        # quote: subjective, plot: objective
+        with open(os.path.join(data_dir, "quote.tok.gt9.5000"), "r", encoding = "ISO-8859-1") as quote:
+            subj = quote.readlines()[1:]
+        with open(os.path.join(data_dir, "plot.tok.gt9.5000"), "r", encoding = "ISO-8859-1") as plot:
+            obj = plot.readlines()[1:]
+        # for each class
+        # train: first 4000 samples
+        # dev: next 500 samples
+        # test: next 500 samples
+        splits = {
+            "train": (0,4000),
+            "dev": (4000,4500),
+            "test": (4500,5000),
+        }
+        # subjective: label 0, objective, label 1
+        for name, (start, end) in splits.items():
+            subj_data = subj[start:end]
+            obj_data = obj[start:end]
+            dat = subj_data + obj_data
+            labels = [0] * len(subj_data) + [1] * len(obj_data)
+            df = pd.DataFrame({
+                "sentence":np.array(dat),
+                "label":np.array(labels)
+            })
+            df.to_csv(os.path.join(path, f"{name}.tsv"), sep="\t", index=False)
+        
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
