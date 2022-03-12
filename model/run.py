@@ -14,18 +14,8 @@ def get_train_steps(dm):
   train_batches = len(dm.train_dataloader()) // total_devices
   return (args.max_epochs * train_batches) // 1#args.accumulate_grad_batches
 
-
-
-
 rlimit = resource.getrlimit(resource.RLIMIT_NOFILE)
 resource.setrlimit(resource.RLIMIT_NOFILE, (4096, rlimit[1]))
-# init: important to make sure every node initializes the same weights
-SEED = 18
-np.random.seed(SEED)
-random.seed(SEED)
-pl.utilities.seed.seed_everything(SEED)
-pytorch_lightning.seed_everything(SEED)
-
 
 # argparser
 parser = ArgumentParser()
@@ -38,12 +28,20 @@ parser.add_argument("--model_name", default='xlnet-base-cased', help="Model to u
 parser.add_argument("--gamma", default=0.01, type=float, help="Gamma parameter")
 parser.add_argument("--lamda", default=0.01, type=float, help="Lamda Parameter")
 parser.add_argument("--topk", default=100, type=int,help="Topk GIL concepts")
+parser.add_argument("--seed", default=18, type=int,help="Random Seed for reproducibitiliy.")
 
 parser = pl.Trainer.add_argparse_args(parser)
 parser = SEXLNet.add_model_specific_args(parser)
 
 args = parser.parse_args()
 args.num_gpus = len(str(args.gpus).split(","))
+
+# init: important to make sure every node initializes the same weights
+seed = args.seed
+np.random.seed(seed)
+random.seed(seed)
+pl.utilities.seed.seed_everything(seed)
+pytorch_lightning.seed_everything(seed)
 
 
 logging.basicConfig(level=logging.INFO)
