@@ -6,5 +6,5 @@ python3 model/run.py --dataset_basedir data/TREC50/ \
                          --concept_store data/TREC50/concept_store.pt \
                          --accelerator ddp \
                          --num_classes 50 \
-                         --seed 22 \
+                         --seed 18 \
                          --baseline

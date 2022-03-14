@@ -7,4 +7,4 @@ python3 model/run.py --dataset_basedir data/stanfordSentimentTreebank/ \
                          --accelerator ddp \
                          --num_classes 5 \
                          --baseline \
-                         --seed 22
+                         --seed 18

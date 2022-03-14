@@ -7,4 +7,4 @@ python3 model/run.py --dataset_basedir data/TREC6/ \
                          --accelerator ddp \
                          --num_classes 6 \
                          --baseline \
-                         --seed 19
+                         --seed 18

@@ -6,4 +6,4 @@ python3 model/run.py --dataset_basedir data/TREC6/ \
                          --concept_store data/TREC6/concept_store.pt \
                          --accelerator ddp \
                          --num_classes 6 \
-                         --seed 22
+                         --seed 18
