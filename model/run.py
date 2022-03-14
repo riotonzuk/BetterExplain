@@ -73,8 +73,5 @@ try:
 except Exception as e:
   print('training failed!', e)
 finally:
-  # trainer.test(model, dm)
-  # print(checkpoint_callback.best_model_path)
-  # model.load_from_checkpoint(checkpoint_callback.best_model_path)
   print("Using {} as best model weights...".format(checkpoint_callback.best_model_path))
   trainer.test(ckpt_path=checkpoint_callback.best_model_path, datamodule=dm)

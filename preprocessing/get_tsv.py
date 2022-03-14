@@ -110,8 +110,12 @@ def convert(args):
         # quote: subjective, plot: objective
         with open(os.path.join(data_dir, "quote.tok.gt9.5000"), "r", encoding = "ISO-8859-1") as quote:
             subj = quote.readlines()[1:]
+            # for i, line in enumerate(subj):
+            #     subj[i] = line[1:-1]
         with open(os.path.join(data_dir, "plot.tok.gt9.5000"), "r", encoding = "ISO-8859-1") as plot:
             obj = plot.readlines()[1:]
+            # for i, line in enumerate(obj):
+            #     obj[i] = line[1:-1]
         # for each class
         # train: first 4000 samples
         # dev: next 500 samples
@@ -128,8 +132,10 @@ def convert(args):
             dat = subj_data + obj_data
             labels = [0] * len(subj_data) + [1] * len(obj_data)
             df = pd.DataFrame({
-                "sentence":np.array(dat),
-                "label":np.array(labels)
+                # "sentence":np.array(dat),
+                # "label":np.array(labels)
+                "sentence": pd.Series(dat, dtype="string"),
+                "label":pd.Series(labels, dtype="int")
             })
             df.to_csv(os.path.join(path, f"{name}.tsv"), sep="\t", index=False)
         
