@@ -1,4 +1,5 @@
-export DATA_FOLDER='data/stanfordSentimentTreebank/'
+# export DATA_FOLDER='data/stanfordSentimentTreebank/'
+export DATA_FOLDER='data/sst-5/'
 export TOKENIZER_NAME='xlnet-base-cased'
 export MAX_LENGTH=5
 
